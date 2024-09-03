@@ -1,0 +1,6 @@
+@smcenter_testtask.API_HostAddress = http://localhost:5240
+
+GET {{smcenter_testtask.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
