@@ -16,8 +16,4 @@
     <ProjectReference Include="..\smcenter_testtask.Infrastructure\smcenter_testtask.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>
