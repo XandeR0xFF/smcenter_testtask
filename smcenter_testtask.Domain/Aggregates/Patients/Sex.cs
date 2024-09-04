@@ -21,7 +21,7 @@ public class Sex
             case FemaleValue:
                 return _female;
             default:
-                throw new ArgumentException($"Incorrect sex value: {value}");
+                throw new Exception($"Incorrect sex value: {value}");
         }
     }
 
