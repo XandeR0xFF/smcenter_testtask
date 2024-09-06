@@ -7,6 +7,6 @@ public interface IPatientRepository : IRepository
     void Add(Patient patient);
     void Delete(Patient patient);
 
-    Task<Patient> GetByIdAsync(long id);
-    Task<IEnumerable<Patient>> GetAllAsync(long page, long pageSize, string orderBy);
+    Task<Patient?> GetByIdAsync(long id);
+    Task<IEnumerable<Patient>> GetAllAsync(int page, int pageSize, string orderBy);
 }

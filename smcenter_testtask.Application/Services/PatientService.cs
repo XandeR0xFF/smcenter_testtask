@@ -12,7 +12,7 @@ public class PatientService(IPatientRepository patientRepository, IDistrictRepos
 
     public async Task Create(CreatePatientRequest request)
     {
-        District district = await _districtRepository.GetByIdAsync(request.DistrictId);
+        District? district = await _districtRepository.GetByIdAsync(request.DistrictId);
         if (district == null)
             throw new Exception("District Id not found.");
 
@@ -21,8 +21,8 @@ public class PatientService(IPatientRepository patientRepository, IDistrictRepos
             lastName: request.LastName,
             patronymicName: request.PatronymicName,
             address: request.Address,
-            sex: Sex.FromValue(request.Sex),
-            districtId: district.Id
+            sex: request.Sex,
+            district: district
             );
 
         _patientRepository.Add(patient);
@@ -31,11 +31,11 @@ public class PatientService(IPatientRepository patientRepository, IDistrictRepos
 
     public async Task Update(long id, UpdatePatientRequest request)
     {
-        Patient patient = await _patientRepository.GetByIdAsync(id);
+        Patient? patient = await _patientRepository.GetByIdAsync(id);
         if (patient == null)
             throw new Exception("Patient Id not found.");
 
-        District district = await _districtRepository.GetByIdAsync(request.DistrictId);
+        District? district = await _districtRepository.GetByIdAsync(request.DistrictId);
         if (district == null)
             throw new Exception("District Id not found.");
 
@@ -43,15 +43,15 @@ public class PatientService(IPatientRepository patientRepository, IDistrictRepos
         patient.LastName = request.LastName;
         patient.PatronymicName = request.PatronymicName;
         patient.Address = request.Address;
-        patient.DistrictId = district.Id;
-        patient.Sex = Sex.FromValue(request.Sex);
+        patient.District = district;
+        patient.Sex = request.Sex;
 
         await _patientRepository.UnitOfWork.SaveChangesAsync();
     }
 
     public async Task Delete(long id)
     {
-        Patient patient = await _patientRepository.GetByIdAsync(id);
+        Patient? patient = await _patientRepository.GetByIdAsync(id);
         if (patient == null)
             throw new Exception("Id not found.");
 
@@ -61,7 +61,7 @@ public class PatientService(IPatientRepository patientRepository, IDistrictRepos
 
     public async Task<PatientForEditResponse> GetForEditByIdAsync(long id)
     {
-        Patient patient = await _patientRepository.GetByIdAsync(id);
+        Patient? patient = await _patientRepository.GetByIdAsync(id);
         if (patient == null)
             throw new Exception("Patient Id not found.");
 
@@ -73,23 +73,19 @@ public class PatientService(IPatientRepository patientRepository, IDistrictRepos
             PatronymicName = patient.PatronymicName,
             Address = patient.Address,
             Sex = patient.Sex.ToString(),
-            DistrictId = patient.DistrictId
+            DistrictId = patient.District.Id
         };
 
         return response;
     }
 
-    public async Task<IEnumerable<PatientResponse>> GetAll(long page, long pageSize, string orderBy)
+    public async Task<IEnumerable<PatientResponse>> GetAll(int page, int pageSize, string? orderBy)
     {
         IEnumerable<Patient> patients = await _patientRepository.GetAllAsync(page, pageSize, orderBy);
         List<PatientResponse> responses = new List<PatientResponse>();
 
         foreach (Patient patient in patients)
         {
-            District district = await _districtRepository.GetByIdAsync(patient.DistrictId);
-            if (district == null)
-                throw new Exception("District Id not found.");
-
             PatientResponse response = new PatientResponse()
             {
                 Id = patient.Id,
@@ -98,7 +94,7 @@ public class PatientService(IPatientRepository patientRepository, IDistrictRepos
                 PatronymicName = patient.PatronymicName,
                 Address = patient.Address,
                 Sex = patient.Sex.ToString(),
-                DistrictNumber = district.Number
+                DistrictNumber = patient.District.Number
             };
             responses.Add(response);
         }

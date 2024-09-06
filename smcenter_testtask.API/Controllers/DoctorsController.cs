@@ -15,7 +15,7 @@ public class DoctorsController(DoctorService doctorService) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<DoctorResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-    async public Task<ActionResult> Get([FromQuery] int page, [FromQuery] int pageSize, [FromQuery] string orderBy)
+    async public Task<ActionResult> Get([FromQuery] int page, [FromQuery] int pageSize, [FromQuery] string? orderBy)
     {
         try
         {
